@@ -200,6 +200,12 @@ void oe_enter(
 
     while (1)
     {
+        // XXX 
+        g_tcs = tcs; 
+        if (g_aep_pointer != (uint64_t) NULL){
+            aep = g_aep_pointer; 
+        }
+        
         // Define register bindings and initialize the registers.
         // On Windows, explicitly setup rbp as a Linux ABI style frame-pointer.
         // On Linux, the frame-pointer is set up by compiling the file with the
@@ -211,12 +217,6 @@ void oe_enter(
         OE_DEFINE_REGISTER(rdi, arg1);
         OE_DEFINE_REGISTER(rsi, arg2);
         OE_DEFINE_FRAME_POINTER(rbp, OE_FRAME_POINTER_VALUE);
-
-        // XXX 
-        g_tcs = tcs; 
-        if (g_aep_pointer != (uint64_t) NULL){
-            aep = g_aep_pointer; 
-        }
 
         asm volatile("fxsave %[fx_state] \n\t" // Save floating point state.
                      "pushfq \n\t"             // Save flags.
