@@ -18,6 +18,8 @@ endif ()
 
 target_include_directories(
   helloworld_host PRIVATE # Needed for the generated file helloworld_u.h
-                          ${CMAKE_CURRENT_BINARY_DIR})
+                          ${CMAKE_CURRENT_BINARY_DIR}
+                          $ENV{SGX_STEP_INCLUDE})
 
-target_link_libraries(helloworld_host openenclave::oehost)
+target_link_libraries(helloworld_host openenclave::oehost
+                      $ENV{SGX_STEP_INCLUDE}/libsgx-step.a)
