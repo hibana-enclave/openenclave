@@ -26,9 +26,8 @@ OE_AEP:
 // additional settings.
 
 .aep:
-
-    ENCLU
-    ud2
+    ENCLU              /* ENCLU (like return, the end of procedure) */
+    ud2                /* this line is never reached */
 
 .cfi_endproc
 
