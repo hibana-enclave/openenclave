@@ -8,18 +8,6 @@
 #include "asmdefs.h"
 #include "enclave.h"
 
-/* XXX runtime reconfigurable indirect Asynchronous Exit Pointer (AEP)
- * (ld complains when initializing __default_async_exit_pointer here, so we have
- * to do it at runtime, when EENTERing, below in .Ldo_eenter.
- */
-//uint64_t g_aep_pointer = (uint64_t) NULL;
-/* XXX HACK: SGX stores TCS address in rbx on interrupt, but this value is
- * somehow not properly stored in Linux's pt_regs struct available to our
- * driver's interrupt handler. We therefore store TCS address here in the
- * untrusted runtime, so as to be able to explicitly communicate TCS to our
- * driver...
- */
-void *g_tcs = NULL;
 
 int sgx_step_eresume_cnt = 0; 
 void sgx_step_print_aex_count(void){
