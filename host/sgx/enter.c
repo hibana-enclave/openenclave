@@ -9,6 +9,9 @@
 #include "enclave.h"
 
 
+
+const uint64_t dummy_aep;
+
 /* XXX runtime reconfigurable indirect Asynchronous Exit Pointer (AEP)
  * (ld complains when initializing __default_async_exit_pointer here, so we have
  * to do it at runtime, when EENTERing, below in .Ldo_eenter.
@@ -22,6 +25,9 @@ uint64_t g_aep_pointer = (uint64_t) NULL;
  */
 void *g_tcs = NULL;
 
+uint64_t last_aep_add = (uint64_t) NULL;
+
+long long eenter_cnt = 0; 
 
 void* sgx_get_aep(void)
 {
@@ -197,15 +203,9 @@ void oe_enter(
     uint64_t fx_state[64];
     oe_ecall_context_t ecall_context = {{0}};
     _setup_ecall_context(&ecall_context);
-
-    while (1)
-    {
-        // XXX 
-        g_tcs = tcs; 
-        if (g_aep_pointer != (uint64_t) NULL){
-            aep = g_aep_pointer; 
-        }
         
+    while (1)
+    {        
         // Define register bindings and initialize the registers.
         // On Windows, explicitly setup rbp as a Linux ABI style frame-pointer.
         // On Linux, the frame-pointer is set up by compiling the file with the

@@ -627,7 +627,7 @@ oe_result_t oe_ecall(
     OE_CHECK(_do_eenter(
         enclave,
         tcs,
-        OE_AEP_ADDRESS,
+        SGX_STEP_AEP_ADDRESS,
         code,
         func,
         arg,

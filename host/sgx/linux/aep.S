@@ -50,3 +50,30 @@ OE_AEP:
 .section .rodata
 .align 8
 OE_AEP_ADDRESS:	.quad .aep
+
+
+//==============================================================================
+//
+// void SGX_STEP_AEP_IMPL(void)
+//
+//==============================================================================
+SGX_STEP_AEP_IMPL:
+.cfi_startproc
+
+.sgx_step_aep_impl_codebase:
+    mov $3, %rax                        /* ERESUME leaf */
+    .byte 0x0f, 0x01, 0xd7              /* ENCLU */
+    ud2                                 /* this line is never reached */
+
+.cfi_endproc
+
+//==============================================================================
+//
+// uint64_t SGX_STEP_AEP_ADDRESS
+//
+//==============================================================================
+.globl SGX_STEP_AEP_ADDRESS
+.section .rodata
+.align 8
+SGX_STEP_AEP_ADDRESS:	.quad .sgx_step_aep_impl_codebase
+
