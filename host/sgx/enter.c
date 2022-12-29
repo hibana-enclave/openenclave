@@ -10,8 +10,6 @@
 
 
 
-const uint64_t dummy_aep;
-
 /* XXX runtime reconfigurable indirect Asynchronous Exit Pointer (AEP)
  * (ld complains when initializing __default_async_exit_pointer here, so we have
  * to do it at runtime, when EENTERing, below in .Ldo_eenter.
@@ -24,10 +22,6 @@ uint64_t g_aep_pointer = (uint64_t) NULL;
  * driver...
  */
 void *g_tcs = NULL;
-
-uint64_t last_aep_add = (uint64_t) NULL;
-
-long long eenter_cnt = 0; 
 
 void* sgx_get_aep(void)
 {
