@@ -61,9 +61,10 @@ SGX_STEP_AEP_IMPL:
 .cfi_startproc
 
 .sgx_step_aep_impl_codebase:
-    mov $3, %rax                        /* ERESUME leaf */
-    .byte 0x0f, 0x01, 0xd7              /* ENCLU */
-    ud2                                 /* this line is never reached */
+    incl sgx_step_eresume_cnt(%rip)
+    mov $3, %rax                                    /* ERESUME leaf */
+    .byte 0x0f, 0x01, 0xd7                          /* ENCLU */
+    ud2                                             /* this line is never reached */
 
 .cfi_endproc
 
