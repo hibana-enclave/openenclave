@@ -8,9 +8,9 @@
 // (ld complains when initializing __default_async_exit_pointer here, so we have
 // to do it at runtime, when EENTERing, below in .Ldo_eenter.
 
-.globl g_aep_pointer
+.globl sgx_step_aep_cb
 .section .data
-g_aep_pointer:
+sgx_step_aep_cb:
     .word 0x0
     .word 0x0
     .word 0x0
@@ -103,7 +103,7 @@ SGX_STEP_AEP_IMPL:
     mov (%rax), %rax
     test %rax, %rax
     je .Leresume
-    nop
+    call *%rax
 
 .Leresume:
     incl sgx_step_eresume_cnt(%rip)
