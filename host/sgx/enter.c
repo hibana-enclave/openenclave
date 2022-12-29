@@ -14,6 +14,35 @@ void sgx_step_show_aex_count(void){
     printf("AEX = %d\n", sgx_step_eresume_cnt); 
 }
 
+/* XXX runtime reconfigurable indirect Asynchronous Exit Pointer (AEP)
+ * (ld complains when initializing __default_async_exit_pointer here, so we have
+ * to do it at runtime, when EENTERing, below in .Ldo_eenter.
+ */
+uint64_t g_aep_pointer = (uint64_t) NULL;
+/* XXX HACK: SGX stores TCS address in rbx on interrupt, but this value is
+ * somehow not properly stored in Linux's pt_regs struct available to our
+ * driver's interrupt handler. We therefore store TCS address here in the
+ * untrusted runtime, so as to be able to explicitly communicate TCS to our
+ * driver...
+ */
+void *g_tcs = NULL;
+
+
+void* sgx_get_aep(void)
+{
+    return NULL; 
+}
+
+void* sgx_get_tcs(void)
+{
+    return NULL;  
+}
+
+void sgx_set_aep(void *aep)
+{
+    printf("[sgx-step] AEP address is %p\n", aep); 
+}
+
 // Define a variable with given name and bind it to the register with the
 // corresponding name. This allows manipulating the register as a normal
 // C variable. The variable and hence the register is also assigned the

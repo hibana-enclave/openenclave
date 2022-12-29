@@ -61,7 +61,36 @@ SGX_STEP_AEP_IMPL:
 .cfi_startproc
 
 .sgx_step_aep_impl_codebase:
+   /*
+     * Save TCS address thread-local on the stack
+     * NOTE: maintain 16-byte stack alignment (ABI calling convention)
+     */
+    push %rbx
+    mov %rsp, %rbp
+    and $~0xf, %rsp
+
+    /* optional C function callback */
+    lea sgx_step_aep_cb(%rip), %rax
+    mov (%rax), %rax
+    test %rax, %rax
+    je .Leresume
+    nop
+
+.Leresume:
     incl sgx_step_eresume_cnt(%rip)
+
+    /* restore stack and TCS address */
+    mov %rbp, %rsp
+    pop %rbx
+
+    mov SGX_STEP_AEP_ADDRESS(%rip), %rcx   /* AEP address */
+
+    prefetch nemesis_tsc_eresume(%rip)
+    mfence
+
+    rdtsc
+    mov %eax, nemesis_tsc_eresume(%rip)
+
     mov $3, %rax                                    /* ERESUME leaf */
     .byte 0x0f, 0x01, 0xd7                          /* ENCLU */
     ud2                                             /* this line is never reached */
