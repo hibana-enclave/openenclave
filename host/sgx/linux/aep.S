@@ -4,34 +4,6 @@
 #include "../asmdefs.h"
 
 
-// XXX runtime reconfigurable indirect Asynchronous Exit Pointer (AEP)
-// (ld complains when initializing __default_async_exit_pointer here, so we have
-// to do it at runtime, when EENTERing, below in .Ldo_eenter.
-
-.globl sgx_step_aep_cb
-.section .data
-sgx_step_aep_cb:
-    .word 0x0
-    .word 0x0
-    .word 0x0
-    .word 0x0
-
-
-// XXX HACK: SGX stores TCS address in rbx on interrupt, but this value is
-// somehow not properly stored in Linux's pt_regs struct available to our
-// driver's interrupt handler. We therefore store TCS address here in the
-// untrusted runtime, so as to be able to explicitly communicate TCS to our
-// driver...
-
-.globl g_tcs
-.section .data
-g_tcs:
-    .word 0x0
-    .word 0x0
-    .word 0x0
-    .word 0x0
-
-
 //==============================================================================
 //
 // void OE_AEP(void)
@@ -59,26 +31,6 @@ OE_AEP:
     ud2                /* this line is never reached */
 
 .cfi_endproc
-
-
-//==============================================================================
-//
-// uint64_t OE_AEP_ADDRESS
-//
-//     The address of the ENCLU instruction is stored in this variable.
-//     If the OE_AEP function were to be used in code, the linker could create
-//     thunks that wrap the function. For example, when incremental linking is
-//     enabled, the linker on windows creates an entry in the ILT table for
-//     each function and uses that wherever the function is referenced.
-//     Thus OE_AEP would end up pointing to the thunk in the ILT which is not
-//     what we want. The OE_AEP_ADDRESS variable gives the precise location of
-//     the ENCLU instruction.
-//
-//==============================================================================
-.globl OE_AEP_ADDRESS
-.section .rodata
-.align 8
-OE_AEP_ADDRESS:	.quad .aep
 
 
 //==============================================================================
@@ -126,6 +78,27 @@ SGX_STEP_AEP_IMPL:
 
 .cfi_endproc
 
+
+//==============================================================================
+//
+// uint64_t OE_AEP_ADDRESS
+//
+//     The address of the ENCLU instruction is stored in this variable.
+//     If the OE_AEP function were to be used in code, the linker could create
+//     thunks that wrap the function. For example, when incremental linking is
+//     enabled, the linker on windows creates an entry in the ILT table for
+//     each function and uses that wherever the function is referenced.
+//     Thus OE_AEP would end up pointing to the thunk in the ILT which is not
+//     what we want. The OE_AEP_ADDRESS variable gives the precise location of
+//     the ENCLU instruction.
+//
+//==============================================================================
+.globl OE_AEP_ADDRESS
+.section .rodata
+.align 8
+OE_AEP_ADDRESS:	.quad .aep
+
+
 //==============================================================================
 //
 // uint64_t SGX_STEP_AEP_ADDRESS
@@ -135,4 +108,37 @@ SGX_STEP_AEP_IMPL:
 .section .rodata
 .align 8
 SGX_STEP_AEP_ADDRESS:	.quad .sgx_step_aep_impl_codebase
+
+
+//==============================================================================
+//
+// SGX-STEP
+//
+//==============================================================================
+
+// XXX runtime reconfigurable indirect Asynchronous Exit Pointer (AEP)
+// (ld complains when initializing __default_async_exit_pointer here, so we have
+// to do it at runtime, when EENTERing, below in .Ldo_eenter.
+
+.globl sgx_step_aep_cb
+.section .data
+sgx_step_aep_cb:
+    .word 0x0
+    .word 0x0
+    .word 0x0
+    .word 0x0
+
+// XXX HACK: SGX stores TCS address in rbx on interrupt, but this value is
+// somehow not properly stored in Linux's pt_regs struct available to our
+// driver's interrupt handler. We therefore store TCS address here in the
+// untrusted runtime, so as to be able to explicitly communicate TCS to our
+// driver...
+
+.globl g_tcs
+.section .data
+g_tcs:
+    .word 0x0
+    .word 0x0
+    .word 0x0
+    .word 0x0
 

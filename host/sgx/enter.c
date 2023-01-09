@@ -8,25 +8,31 @@
 #include "asmdefs.h"
 #include "enclave.h"
 
+extern const uint64_t SGX_STEP_AEP_ADDRESS; 
+extern uint64_t g_tcs; 
 
 int sgx_step_eresume_cnt = 0; 
-void sgx_step_print_aex_count(void){
-    printf("AEX = %d\n", sgx_step_eresume_cnt); 
+
+void sgx_step_print_aex_count(void)
+{
+    printf("[[ sgx-step ]] AEX = %d\n", sgx_step_eresume_cnt); 
 }
 
 void* sgx_get_aep(void)
 {
-    return NULL; 
+    return (void*) SGX_STEP_AEP_ADDRESS; 
 }
 
 void* sgx_get_tcs(void)
 {
-    return NULL;  
+    return (void*) g_tcs;  
 }
 
 void sgx_set_aep(void *aep)
 {
-    printf("[sgx-step] AEP address is %p\n", aep); 
+    aep = NULL; 
+    printf("[[ sgx-step ]] **WARNING**: sgx-step trampoline is hard-coded in openenclave/host/sgx/calls.c \n"); 
+    printf("[[ sgx-step ]] DO NOT USE THIS FUNCTION. \n"); 
 }
 
 // Define a variable with given name and bind it to the register with the
