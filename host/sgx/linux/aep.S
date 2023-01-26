@@ -6,31 +6,35 @@
 
 //==============================================================================
 //
-// void OE_AEP(void)
-//
-//     Asynchronous Exception Pointer (AEP) function that handles exceptions
-//     and interrupts from an enclave. A pointer to this function is passed
-//     to the EENTER instruction and this function. This implementation resumes
-//     execution of the enclave (ERESUME).
-//
-//     This function must not use or modify the stack, else it could overwrite
-//     the host stack region used by enclave host stack allocaiton routines.
+// SGX-STEP
 //
 //==============================================================================
-OE_AEP:
-.cfi_startproc
 
-// N.B, the AEP must be a ERESUME(ENCLU[3]) directly, otherwise single step
-// debugging can't work. When an AEX happens, the rax in processor synthentic
-// state will be set to 3, and the rbx will be set to TCS of interrupted
-// enclave thread automatically. Host side doesn't need to and shouldn't do
-// additional settings.
+// XXX runtime reconfigurable indirect Asynchronous Exit Pointer (AEP)
+// (ld complains when initializing __default_async_exit_pointer here, so we have
+// to do it at runtime, when EENTERing, below in .Ldo_eenter.
 
-.aep:
-    ENCLU              /* ENCLU (like return, the end of procedure) */
-    ud2                /* this line is never reached */
+.globl sgx_step_aep_cb
+.section .data
+sgx_step_aep_cb:
+    .word 0x0
+    .word 0x0
+    .word 0x0
+    .word 0x0
 
-.cfi_endproc
+// XXX HACK: SGX stores TCS address in rbx on interrupt, but this value is
+// somehow not properly stored in Linux's pt_regs struct available to our
+// driver's interrupt handler. We therefore store TCS address here in the
+// untrusted runtime, so as to be able to explicitly communicate TCS to our
+// driver...
+
+.globl g_tcs
+.section .data
+g_tcs:
+    .word 0x0
+    .word 0x0
+    .word 0x0
+    .word 0x0
 
 
 //==============================================================================
@@ -81,6 +85,46 @@ SGX_STEP_AEP_IMPL:
 
 //==============================================================================
 //
+// uint64_t SGX_STEP_AEP_ADDRESS
+//
+//==============================================================================
+.globl SGX_STEP_AEP_ADDRESS
+.section .rodata
+.align 8
+SGX_STEP_AEP_ADDRESS:	.quad .sgx_step_aep_impl_codebase
+
+
+//==============================================================================
+//
+// void OE_AEP(void)
+//
+//     Asynchronous Exception Pointer (AEP) function that handles exceptions
+//     and interrupts from an enclave. A pointer to this function is passed
+//     to the EENTER instruction and this function. This implementation resumes
+//     execution of the enclave (ERESUME).
+//
+//     This function must not use or modify the stack, else it could overwrite
+//     the host stack region used by enclave host stack allocaiton routines.
+//
+//==============================================================================
+//OE_AEP:
+//.cfi_startproc
+//
+// N.B, the AEP must be a ERESUME(ENCLU[3]) directly, otherwise single step
+// debugging can't work. When an AEX happens, the rax in processor synthentic
+// state will be set to 3, and the rbx will be set to TCS of interrupted
+// enclave thread automatically. Host side doesn't need to and shouldn't do
+// additional settings.
+//
+//.aep:
+//    ENCLU              /* ENCLU (like return, the end of procedure) */
+//    ud2                /* this line is never reached */
+//
+//.cfi_endproc
+
+
+//==============================================================================
+//
 // uint64_t OE_AEP_ADDRESS
 //
 //     The address of the ENCLU instruction is stored in this variable.
@@ -93,52 +137,8 @@ SGX_STEP_AEP_IMPL:
 //     the ENCLU instruction.
 //
 //==============================================================================
-.globl OE_AEP_ADDRESS
-.section .rodata
-.align 8
-OE_AEP_ADDRESS:	.quad .aep
-
-
-//==============================================================================
-//
-// uint64_t SGX_STEP_AEP_ADDRESS
-//
-//==============================================================================
-.globl SGX_STEP_AEP_ADDRESS
-.section .rodata
-.align 8
-SGX_STEP_AEP_ADDRESS:	.quad .sgx_step_aep_impl_codebase
-
-
-//==============================================================================
-//
-// SGX-STEP
-//
-//==============================================================================
-
-// XXX runtime reconfigurable indirect Asynchronous Exit Pointer (AEP)
-// (ld complains when initializing __default_async_exit_pointer here, so we have
-// to do it at runtime, when EENTERing, below in .Ldo_eenter.
-
-.globl sgx_step_aep_cb
-.section .data
-sgx_step_aep_cb:
-    .word 0x0
-    .word 0x0
-    .word 0x0
-    .word 0x0
-
-// XXX HACK: SGX stores TCS address in rbx on interrupt, but this value is
-// somehow not properly stored in Linux's pt_regs struct available to our
-// driver's interrupt handler. We therefore store TCS address here in the
-// untrusted runtime, so as to be able to explicitly communicate TCS to our
-// driver...
-
-.globl g_tcs
-.section .data
-g_tcs:
-    .word 0x0
-    .word 0x0
-    .word 0x0
-    .word 0x0
+//.globl OE_AEP_ADDRESS
+//.section .rodata
+//.align 8
+//OE_AEP_ADDRESS:	.quad .aep
 
