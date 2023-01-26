@@ -5,17 +5,18 @@
 #include <openenclave/internal/calls.h>
 #include <openenclave/internal/registers.h>
 #include <openenclave/internal/sgx/ecall_context.h>
+#include <stdio.h>
 #include "asmdefs.h"
 #include "enclave.h"
 
 extern const uint64_t SGX_STEP_AEP_ADDRESS; 
 extern uint64_t g_tcs; 
 
-int sgx_step_eresume_cnt = 0; 
+unsigned int sgx_step_eresume_cnt = 0; 
 
 void sgx_step_print_aex_count(void)
 {
-    printf("[[ sgx-step ]] AEX = %d\n", sgx_step_eresume_cnt); 
+    printf("[[ sgx-step ]] AEX = %u\n", sgx_step_eresume_cnt); 
 }
 
 void* sgx_get_aep(void)
