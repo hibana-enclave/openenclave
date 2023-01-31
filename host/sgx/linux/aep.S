@@ -6,8 +6,7 @@
 
 //==============================================================================
 //
-// void OE_AEP(void)
-//
+// void SGX_STEP_AEP_IMPL(void)
 //     Asynchronous Exception Pointer (AEP) function that handles exceptions
 //     and interrupts from an enclave. A pointer to this function is passed
 //     to the EENTER instruction and this function. This implementation resumes
@@ -17,29 +16,11 @@
 //     the host stack region used by enclave host stack allocaiton routines.
 //
 //==============================================================================
-OE_AEP:
-.cfi_startproc
-
-// N.B, the AEP must be a ERESUME(ENCLU[3]) directly, otherwise single step
-// debugging can't work. When an AEX happens, the rax in processor synthentic
-// state will be set to 3, and the rbx will be set to TCS of interrupted
-// enclave thread automatically. Host side doesn't need to and shouldn't do
-// additional settings.
-
-.aep:
-    ENCLU              /* ENCLU (like return, the end of procedure) */
-    ud2                /* this line is never reached */
-
-.cfi_endproc
-
-
-//==============================================================================
-//
-// void SGX_STEP_AEP_IMPL(void)
-//
-//==============================================================================
 SGX_STEP_AEP_IMPL:
 .cfi_startproc
+
+
+#ifdef SGXSTEP
 
 .sgx_step_aep_impl_codebase:
    /*
@@ -77,13 +58,27 @@ SGX_STEP_AEP_IMPL:
     .byte 0x0f, 0x01, 0xd7                          /* ENCLU */
     ud2                                             /* this line is never reached */
 
+#else 
+
+// N.B, the AEP must be a ERESUME(ENCLU[3]) directly, otherwise single step
+// debugging can't work. When an AEX happens, the rax in processor synthentic
+// state will be set to 3, and the rbx will be set to TCS of interrupted
+// enclave thread automatically. Host side doesn't need to and shouldn't do
+// additional settings.
+
+.aep:
+    ENCLU              /* ENCLU (like return, the end of procedure) */
+    ud2                /* this line is never reached */
+
+#endif
+
 .cfi_endproc
 
 
 //==============================================================================
 //
-// uint64_t OE_AEP_ADDRESS
-//
+// uint64_t SGX_STEP_AEP_ADDRESS
+// 
 //     The address of the ENCLU instruction is stored in this variable.
 //     If the OE_AEP function were to be used in code, the linker could create
 //     thunks that wrap the function. For example, when incremental linking is
@@ -91,18 +86,7 @@ SGX_STEP_AEP_IMPL:
 //     each function and uses that wherever the function is referenced.
 //     Thus OE_AEP would end up pointing to the thunk in the ILT which is not
 //     what we want. The OE_AEP_ADDRESS variable gives the precise location of
-//     the ENCLU instruction.
-//
-//==============================================================================
-.globl OE_AEP_ADDRESS
-.section .data.rel.local,"aw"
-.align 8
-OE_AEP_ADDRESS:	.quad .aep
-
-
-//==============================================================================
-//
-// uint64_t SGX_STEP_AEP_ADDRESS
+//     the ENCLU instruction. 
 //
 //==============================================================================
 .globl SGX_STEP_AEP_ADDRESS
