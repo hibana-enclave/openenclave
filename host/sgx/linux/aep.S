@@ -90,7 +90,7 @@ SGX_STEP_AEP_IMPL:
 //
 //==============================================================================
 .globl SGX_STEP_AEP_ADDRESS
-.section .data.rel.local,"aw"
+.section .rodata
 .align 8
 SGX_STEP_AEP_ADDRESS:	.quad .sgx_step_aep_impl_codebase
 
