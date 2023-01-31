@@ -392,6 +392,7 @@ void oe_free_key(
     size_t key_info_size);
 
 void sgx_step_print_aex_count(void); 
+void sgx_lkl_print_app_main_aex_count(void); 
 void* sgx_get_aep(void);
 void  sgx_set_aep(void *aep);
 void* sgx_get_tcs(void);
