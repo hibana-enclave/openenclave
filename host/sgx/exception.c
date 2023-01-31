@@ -24,7 +24,7 @@ uint64_t oe_host_handle_exception(oe_host_exception_context_t* context)
     uint64_t exit_address = context->rip;
 
     // Check if the signal happens inside the enclave.
-    if ((exit_address == OE_AEP_ADDRESS || exit_address == SGX_STEP_AEP_ADDRESS) && (exit_code == ENCLU_ERESUME))
+    if ((exit_address == SGX_STEP_AEP_ADDRESS) && (exit_code == ENCLU_ERESUME))
     {
         // Check if the enclave exception happens inside the first pass
         // exception handler.
