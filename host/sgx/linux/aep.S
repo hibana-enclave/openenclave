@@ -20,8 +20,6 @@ SGX_STEP_AEP_IMPL:
 .cfi_startproc
 
 .sgx_step_aep_impl_codebase:
-
-#ifdef SGXSTEP
    /*
      * Save TCS address thread-local on the stack
      * NOTE: maintain 16-byte stack alignment (ABI calling convention)
@@ -57,18 +55,14 @@ SGX_STEP_AEP_IMPL:
     .byte 0x0f, 0x01, 0xd7                          /* ENCLU */
     ud2                                             /* this line is never reached */
 
-#else 
-
 // N.B, the AEP must be a ERESUME(ENCLU[3]) directly, otherwise single step
 // debugging can't work. When an AEX happens, the rax in processor synthentic
 // state will be set to 3, and the rbx will be set to TCS of interrupted
 // enclave thread automatically. Host side doesn't need to and shouldn't do
 // additional settings.
 
-    ENCLU              /* ENCLU (like return, the end of procedure) */
-    ud2                /* this line is never reached */
-
-#endif
+//    ENCLU              /* ENCLU (like return, the end of procedure) */
+//    ud2                /* this line is never reached */
 
 .cfi_endproc
 

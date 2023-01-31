@@ -19,16 +19,12 @@ unsigned int sgx_lkl_aex_cnt = 0;
 
 void sgx_step_print_aex_count(void)
 {
-#ifdef SGXSTEP    
     printf("[[ SGX-LKL ]] Total AEX = %u (including LKL and Application)\n", sgx_step_eresume_cnt); 
-#endif
 }
 
 void sgx_lkl_print_app_main_aex_count(void)
 {
-#ifdef SGXSTEP
     printf("[[ SGX-LKL ]] Enclave Application AEX = %u\n", sgx_lkl_aex_cnt); 
-#endif
 }
 
 void* sgx_get_aep(void)
