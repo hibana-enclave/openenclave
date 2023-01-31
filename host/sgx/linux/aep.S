@@ -19,10 +19,9 @@
 SGX_STEP_AEP_IMPL:
 .cfi_startproc
 
+.sgx_step_aep_impl_codebase:
 
 #ifdef SGXSTEP
-
-.sgx_step_aep_impl_codebase:
    /*
      * Save TCS address thread-local on the stack
      * NOTE: maintain 16-byte stack alignment (ABI calling convention)
@@ -66,7 +65,6 @@ SGX_STEP_AEP_IMPL:
 // enclave thread automatically. Host side doesn't need to and shouldn't do
 // additional settings.
 
-.aep:
     ENCLU              /* ENCLU (like return, the end of procedure) */
     ud2                /* this line is never reached */
 
