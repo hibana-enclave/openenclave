@@ -59,6 +59,7 @@ SGX_STEP_AEP_IMPL:
 
 .Leresume:
     incl sgx_step_eresume_cnt(%rip)
+    incl __sgx_lkl_aex_cnt_aux(%rip)
 
     /* restore stack and TCS address */
     mov %rbp, %rsp
