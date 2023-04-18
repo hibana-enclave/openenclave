@@ -42,16 +42,10 @@ SGX_STEP_AEP_IMPL:
     mov %rbp, %rsp
     pop %rbx
 
-    mov SGX_STEP_AEP_ADDRESS(%rip), %rcx   /* AEP address */
+    mov SGX_STEP_AEP_ADDRESS(%rip), %rcx             /* AEP address */
 
-    prefetch nemesis_tsc_eresume(%rip)
-    mfence
-
-    rdtsc
-    mov %eax, nemesis_tsc_eresume(%rip)
-
-    mov $3, %rax                                    /* ERESUME leaf */
-    .byte 0x0f, 0x01, 0xd7                          /* ENCLU */
+    mov $3, %rax                                    /* ERESUME leaf (linux-sgx/common/inc/internal/inst.h  se_opcode_t SE_ERESUME) */
+    ENCLU                                           /* ENCLU */
     ud2                                             /* this line is never reached */
 
 // N.B, the AEP must be a ERESUME(ENCLU[3]) directly, otherwise single step
@@ -102,16 +96,20 @@ g_tcs:
 
 .globl __sgx_lkl_aex_cnt_aux
 .section .data
-.align 4
+.align 8
 __sgx_lkl_aex_cnt_aux:
+    .word 0x0
+    .word 0x0
     .word 0x0
     .word 0x0
 
 
 .globl sgx_lkl_aex_cnt
 .section .data
-.align 4
+.align 8
 sgx_lkl_aex_cnt:
+    .word 0x0
+    .word 0x0
     .word 0x0
     .word 0x0
 

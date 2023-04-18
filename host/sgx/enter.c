@@ -11,15 +11,12 @@
 
 extern const uint64_t SGX_STEP_AEP_ADDRESS; 
 extern uint64_t g_tcs; 
-
-unsigned int sgx_step_eresume_cnt = 0; 
-
-unsigned int __sgx_lkl_aex_cnt_aux = 0; 
-unsigned int sgx_lkl_aex_cnt = 0; 
+extern unsigned int __sgx_lkl_aex_cnt_aux; 
+extern unsigned int sgx_lkl_aex_cnt; 
 
 void sgx_step_print_aex_count(void)
 {
-    printf("[[ SGX-LKL ]] Total AEX = %u (including LKL and Application)\n", sgx_step_eresume_cnt); 
+    printf("[[ SGX-LKL ]] Total AEX = %u (including LKL and Application)\n", __sgx_lkl_aex_cnt_aux); 
 }
 
 void sgx_lkl_print_app_main_aex_count(void)
