@@ -28,8 +28,6 @@ SGX_STEP_AEP_IMPL:
     mov %rsp, %rbp
     and $~0xf, %rsp
 
-    incl __sgx_lkl_aex_cnt_aux(%rip)
-
     /* optional C function callback */
     lea sgx_step_aep_cb(%rip), %rax
     mov (%rax), %rax
@@ -38,6 +36,7 @@ SGX_STEP_AEP_IMPL:
     call *%rax
 
 .Leresume:
+    incl __sgx_lkl_aex_cnt_aux(%rip)
 
     /* restore stack and TCS address */
     mov %rbp, %rsp
