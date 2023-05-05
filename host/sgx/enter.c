@@ -21,11 +21,10 @@ void sgx_step_print_aex_count(void)
 
 void sgx_lkl_print_app_main_aex_count(void)
 {
-    printf("[[ SGX-LKL ]] Enclave Application AEX = %lld\n", sgx_lkl_aex_cnt); 
     if (sgx_lkl_aex_cnt == 0){
-        printf("[[ SGX-LKL ]] Enclave Application AEX = %lld\n", __sgx_lkl_aex_cnt_aux); 
+        printf("[[ SGX-LKL ]] Enclave Application AEX = %llu\n", __sgx_lkl_aex_cnt_aux); 
     }else{
-        printf("[[ SGX-LKL ]] Enclave Application AEX = %lld\n", sgx_lkl_aex_cnt); 
+        printf("[[ SGX-LKL ]] Enclave Application AEX = %llu\n", sgx_lkl_aex_cnt); 
     }
 }
 
