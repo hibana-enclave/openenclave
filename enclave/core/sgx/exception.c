@@ -391,9 +391,6 @@ void oe_virtual_exception_dispatcher(
              * oe_exception_record instead */
             td->exception_code = OE_EXCEPTION_PAGE_FAULT;
             td->exception_flags |= OE_EXCEPTION_FLAGS_HARDWARE;
-            // ============== haohua ==============
-            ssa_gpr->reserved = 0xfff; // haohua: I don't why they set this case as "seg fault". 
-            // ============== haohua ==============
         }
         else
         {
