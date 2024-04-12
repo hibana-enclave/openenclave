@@ -5,8 +5,45 @@
 #include <openenclave/internal/calls.h>
 #include <openenclave/internal/registers.h>
 #include <openenclave/internal/sgx/ecall_context.h>
+#include <stdio.h>
 #include "asmdefs.h"
 #include "enclave.h"
+
+extern const uint64_t SGX_STEP_AEP_ADDRESS; 
+extern uint64_t g_tcs; 
+extern unsigned long long __sgx_lkl_aex_cnt_aux; 
+extern unsigned long long sgx_lkl_aex_cnt; 
+
+void sgx_step_print_aex_count(void)
+{
+    printf("[[ SGX-LKL ]] Total AEX = %llu (including LKL housekeeping and application execution)\n", __sgx_lkl_aex_cnt_aux); 
+}
+
+void sgx_lkl_print_app_main_aex_count(void)
+{
+    if (sgx_lkl_aex_cnt == 0){
+        printf("[[ SGX-LKL ]] Enclave Application AEX = %llu\n", __sgx_lkl_aex_cnt_aux); 
+    }else{
+        printf("[[ SGX-LKL ]] Enclave Application AEX = %llu\n", sgx_lkl_aex_cnt); 
+    }
+}
+
+void* sgx_get_aep(void)
+{
+    return (void*) SGX_STEP_AEP_ADDRESS; 
+}
+
+void* sgx_get_tcs(void)
+{
+    return (void*) g_tcs;  
+}
+
+void sgx_set_aep(void *aep)
+{
+    aep = NULL; 
+    printf("[[ sgx-step ]] **WARNING**: sgx-step trampoline is hard-coded in openenclave/host/sgx/calls.c \n"); 
+    printf("[[ sgx-step ]] DO NOT USE THIS FUNCTION. \n"); 
+}
 
 // Define a variable with given name and bind it to the register with the
 // corresponding name. This allows manipulating the register as a normal
@@ -164,9 +201,9 @@ void oe_enter(
     uint64_t fx_state[64];
     oe_ecall_context_t ecall_context = {{0}};
     _setup_ecall_context(&ecall_context);
-
+        
     while (1)
-    {
+    {        
         // Define register bindings and initialize the registers.
         // On Windows, explicitly setup rbp as a Linux ABI style frame-pointer.
         // On Linux, the frame-pointer is set up by compiling the file with the

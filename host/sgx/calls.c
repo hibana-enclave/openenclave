@@ -47,6 +47,8 @@
 **==============================================================================
 */
 
+extern uint64_t g_tcs; 
+
 static oe_once_type _thread_binding_once;
 static oe_thread_key _thread_binding_key;
 
@@ -624,10 +626,11 @@ oe_result_t oe_ecall(
         oe_ecall_str(func));
 
     /* Perform ECALL or ORET */
+    g_tcs = (uint64_t) tcs; 
     OE_CHECK(_do_eenter(
         enclave,
         tcs,
-        OE_AEP_ADDRESS,
+        SGX_STEP_AEP_ADDRESS,
         code,
         func,
         arg,

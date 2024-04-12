@@ -35,8 +35,7 @@ void oe_enter(
     uint64_t* arg3,
     uint64_t* arg4,
     oe_enclave_t* enclave);
-
-extern const uint64_t OE_AEP_ADDRESS;
+extern const uint64_t SGX_STEP_AEP_ADDRESS; 
 #endif
 
 #ifndef __ASSEMBLER__
